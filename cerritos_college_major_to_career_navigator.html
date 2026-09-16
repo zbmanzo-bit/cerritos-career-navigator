@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cerritos College - Major to Career Navigator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        falcon: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                            dark: '#0f2942',
+                            gold: '#f59e0b',
+                            goldHover: '#d97706'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .tab-btn.active {
+            border-bottom: 3px solid #0f766e;
+            color: #0f766e;
+            font-weight: 700;
+            background-color: #f0fdfa;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-teal-200 selection:text-teal-900">
+
+    <!-- Top Header / Campus Navigation -->
+    <header class="bg-falcon-dark text-white sticky top-0 z-30 shadow-md border-b border-teal-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-400 text-slate-900 font-black p-2 rounded-xl text-xl tracking-wider flex items-center justify-center w-11 h-11 shadow-inner">
+                    CC
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg sm:text-xl leading-tight text-white flex items-center gap-2">
+                        Major-to-Career Navigator
+                        <span class="bg-teal-600 text-teal-100 text-xs font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider hidden sm:inline-block">LA / OC Regional Pathways</span>
+                    </h1>
+                    <p class="text-xs text-slate-300">Cerritos College Student Career Pathways & Experiential Learning Guide</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="toggleActionPlanModal()" class="bg-amber-400 hover:bg-amber-500 text-slate-900 text-xs sm:text-sm font-bold px-4 py-2 rounded-xl transition-all flex items-center gap-2 shadow hover:shadow-md active:scale-95">
+                    <i class="fa-solid fa-clipboard-list text-base"></i>
+                    <span>My Career Action Plan</span>
+                    <span id="plan-badge-count" class="bg-slate-900 text-amber-400 rounded-full text-xs w-5 h-5 flex items-center justify-center font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Interactive Controls Bar -->
+    <section class="bg-white border-b border-slate-200 shadow-sm sticky top-[61px] z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+                
+                <!-- Major Search & Dropdown -->
+                <div class="flex-1 space-y-1">
+                    <label for="major-select" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Select Academic Major / Program</label>
+                    <div class="relative">
+                        <select id="major-select" onchange="handleMajorChange(this.value)" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm sm:text-base rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 p-2.5 pr-10 font-semibold cursor-pointer shadow-sm">
+                            <!-- Populated dynamically by JS -->
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage Filter -->
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Student Stage Filter</label>
+                    <div class="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200 w-full lg:w-auto">
+                        <button id="stage-all" onclick="setStage('all')" class="stage-btn flex-1 lg:flex-none px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm bg-white text-teal-800">
+                            <i class="fa-solid fa-layer-group mr-1"></i> All Stages
+                        </button>
+                        <button id="stage-lower" onclick="setStage('lower')" class="stage-btn flex-1 lg:flex-none px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all">
+                            <i class="fa-solid fa-seedling mr-1 text-emerald-600"></i> Freshmen / Early
+                        </button>
+                        <button id="stage-upper" onclick="setStage('upper')" class="stage-btn flex-1 lg:flex-none px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all">
+                            <i class="fa-solid fa-graduation-cap mr-1 text-amber-600"></i> Advanced / Transfer
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Search -->
+                <div class="space-y-1 lg:w-64">
+                    <label for="search-input" class="block text-xs font-bold uppercase tracking-wider text-slate-500">Keyword Search</label>
+                    <div class="relative">
+                        <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="e.g. Lab, NASA, Cybersecurity, Remote..." class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs sm:text-sm rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 p-2.5 pl-9 shadow-sm">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Program Banner & Info -->
+        <div id="program-header" class="bg-gradient-to-r from-falcon-dark to-slate-800 text-white rounded-2xl p-6 shadow-lg relative overflow-hidden">
+            <div class="absolute right-0 top-0 bottom-0 opacity-10 pointer-events-none flex items-center pr-10">
+                <i id="program-bg-icon" class="fa-solid fa-flask text-9xl text-white"></i>
+            </div>
+            <div class="relative z-10 space-y-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span id="program-badge-type" class="bg-amber-400 text-slate-900 font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Associate Degree (A.S.)</span>
+                    <span id="program-category" class="bg-teal-900 text-teal-200 border border-teal-700 text-xs font-semibold px-3 py-1 rounded-full">Biological Sciences Division</span>
+                </div>
+                <h2 id="program-title" class="text-2xl sm:text-3xl font-extrabold tracking-tight">Biology</h2>
+                <p id="program-description" class="text-slate-300 text-sm max-w-3xl leading-relaxed">Prepares students for entry-level biological laboratory positions or transfer into 4-year university programs in Ecology, Health Sciences, Molecular Biology, and Biotechnology.</p>
+                
+                <div class="pt-2 flex flex-wrap gap-4 text-xs font-medium text-slate-300 border-t border-slate-700/60 mt-4">
+                    <div class="flex items-center gap-1.5"><i class="fa-solid fa-dollar-sign text-amber-400"></i> Local Entry Salary: <span id="program-salary" class="text-white font-bold">$48,000 - $82,000/yr</span></div>
+                    <div class="flex items-center gap-1.5"><i class="fa-solid fa-chart-line text-emerald-400"></i> Regional Job Growth: <span id="program-growth" class="text-white font-bold">+8.5% (High Demand)</span></div>
+                    <div class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-teal-400"></i> Primary Hubs: <span id="program-hubs" class="text-white font-bold">Norwalk, Lakewood, Downey, Long Beach, Irvine</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Navigation Tabs -->
+        <div class="border-b border-slate-200 bg-white rounded-xl shadow-sm overflow-x-auto">
+            <nav class="flex space-x-1 p-1 min-w-max" aria-label="Tabs">
+                <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active px-5 py-3 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-compass text-teal-600"></i> Career Pathways & Roles
+                </button>
+                <button onclick="switchTab('jobs')" id="tab-jobs" class="tab-btn px-5 py-3 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-briefcase text-emerald-600"></i> Part-Time Jobs
+                </button>
+                <button onclick="switchTab('volunteer')" id="tab-volunteer" class="tab-btn px-5 py-3 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-hands-holding-child text-indigo-600"></i> Volunteer Work
+                </button>
+                <button onclick="switchTab('internships')" id="tab-internships" class="tab-btn px-5 py-3 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-building-user text-amber-600"></i> Internships & REUs
+                </button>
+                <button onclick="switchTab('transfer')" id="tab-transfer" class="tab-btn px-5 py-3 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-sky-600"></i> Transfer & Certifications
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tab Content Area -->
+        <div id="tab-content-container">
+            <!-- Dynamic Content Injected Here by JS -->
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+            <div>
+                <p class="text-slate-200 font-semibold">Cerritos College - Science, Engineering, and Mathematics Division</p>
+                <p class="text-slate-400 mt-0.5">11110 Alondra Blvd, Norwalk, CA 90650 • Designed for Career & Transfer Student Success</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="#" onclick="window.print(); return false;" class="text-teal-400 hover:text-teal-300 font-medium flex items-center gap-1.5"><i class="fa-solid fa-print"></i> Print Guide</a>
+                <span class="text-slate-700">|</span>
+                <span class="text-slate-400">LA/OC Regional Data 2026</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Action Plan Drawer / Modal -->
+    <div id="action-plan-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden transition-opacity flex justify-end">
+        <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col border-l border-slate-200 animate-slide-in">
+            <div class="p-5 bg-falcon-dark text-white flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="p-2 bg-amber-400 text-slate-900 rounded-lg font-bold text-sm">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base leading-tight">My Career Action Plan</h3>
+                        <p class="text-xs text-slate-300">Saved Opportunities & Next Steps</p>
+                    </div>
+                </div>
+                <button onclick="toggleActionPlanModal()" class="text-slate-300 hover:text-white p-2 rounded-lg text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-4 bg-teal-50 border-b border-teal-100 flex items-center justify-between text-xs text-teal-800">
+                <span>Items saved: <strong id="plan-count-text">0</strong></span>
+                <button onclick="clearActionPlan()" class="text-rose-600 hover:underline font-bold text-xs"><i class="fa-solid fa-trash-can mr-1"></i> Clear All</button>
+            </div>
+
+            <div id="action-plan-items" class="flex-1 overflow-y-auto p-4 space-y-3">
+                <!-- Dynamically populated -->
+            </div>
+
+            <div class="p-4 border-t border-slate-200 bg-slate-50 space-y-2">
+                <button onclick="window.print()" class="w-full bg-falcon-dark hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow">
+                    <i class="fa-solid fa-file-pdf"></i> Print / Save Action Plan
+                </button>
+                <button onclick="toggleActionPlanModal()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 rounded-xl text-xs">
+                    Close Drawer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application JavaScript -->
+    <script>
+        // Database of Cerritos College SEM Division Majors
+        const majorsData = [
+            {
+                id: "biology",
+                title: "Biology",
+                type: "Associate Degree (A.S.)",
+                category: "Biological Sciences",
+                icon: "fa-dna",
+                salary: "$52,000 - $88,000 / yr",
+                growth: "+8% (LA/OC Regional)",
+                hubs: "Lakewood, Downey, Long Beach, Irvine, Duarte",
+                description: "Focuses on foundational biological principles, organismal biology, genetics, and ecology. Ideal for pre-med, environmental science, and research pathways.",
+                careers: [
+                    { title: "Biological Technician", wage: "$54,000/yr", desc: "Assist biological scientists in field work and laboratory testing." },
+                    { title: "Clinical Research Assistant", wage: "$58,000/yr", desc: "Support clinical trial protocols at regional hospital networks." },
+                    { title: "Environmental Specialist Assistant", wage: "$62,000/yr", desc: "Monitor environmental quality for local municipalities and agencies." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Cerritos College Math/STEM Tutor", org: "Cerritos College Success Center", desc: "Help peers master introductory biology, chemistry, and algebra concepts.", flex: "10-15 hrs/wk" },
+                    { stage: "lower", title: "Pharmacy Tech / Clerical Aide", org: "Lakewood Regional Medical Center", desc: "Gain clinical setting exposure while assisting with inventory and record keeping.", flex: "15-20 hrs/wk" },
+                    { stage: "upper", title: "Specimen Processing Aide", org: "Kaiser Permanente Downey Medical Center", desc: "Receive, log, and prepare medical laboratory specimens.", flex: "Part-time / Shifts" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "Clinical Support Volunteer", org: "Rancho Los Amigos National Rehab Center (Downey)", desc: "Assist patients and support clinical department operations." },
+                    { stage: "lower", title: "Wildlife Rehabilitation Aide", org: "International Bird Rescue (San Pedro)", desc: "Assist with marine wildlife nutrition, habitat cleaning, and release." },
+                    { stage: "upper", title: "Community Health Outreach", org: "LA County Dept of Public Health", desc: "Educate local residents on public health initiatives and health screen events." }
+                ],
+                internships: [
+                    { stage: "upper", title: "City of Long Beach Health & Environmental Intern", org: "City of Long Beach", desc: "Participate in water quality testing and community vector control research." },
+                    { stage: "upper", title: "City of Hope Summer Research Fellow", org: "City of Hope (Duarte, CA)", desc: "10-week paid biomedical laboratory research program for undergraduate students." },
+                    { stage: "upper", title: "CSULB BUILD Undergraduate Research Fellow", org: "Cal State Long Beach", desc: "Hands-on research training in health and biomedical sciences for transfer students." }
+                ],
+                transfer: {
+                    certs: ["CPR / First Aid", "OSHA 10-Hour General Industry Safety", "HIPAA Compliance Certification"],
+                    universities: ["CSU Long Beach (Biology B.S.)", "CSU Fullerton (Biological Science B.S.)", "UC Irvine (Biological Sciences B.S.)", "UCLA (Ecology & Evolutionary Bio B.S.)"]
+                }
+            },
+            {
+                id: "biotech",
+                title: "Biotechnology & Certificates (Wet Lab / Biomanufacturing)",
+                type: "A.S. Degree & Certificates",
+                category: "Biological Sciences",
+                icon: "fa-flask-vial",
+                salary: "$56,000 - $92,000 / yr",
+                growth: "+11% (High Growth Area)",
+                hubs: "Torrance, Thousand Oaks, Irvine, Pasadena, City of Industry",
+                description: "Combines biology and chemical technology with hands-on training in biomanufacturing, recombinant DNA techniques, cell culture, and quality control (cGMP).",
+                careers: [
+                    { title: "Biomanufacturing Associate", wage: "$58,000/yr", desc: "Operate bioreactors and purification equipment following strict FDA/cGMP protocols." },
+                    { title: "Quality Control (QC) Lab Tech", wage: "$62,000/yr", desc: "Test raw materials, water systems, and biopharmaceutical products." },
+                    { title: "Assay Development Technician", wage: "$66,000/yr", desc: "Perform ELISA, PCR, and gel electrophoresis for diagnostic and pharma R&D." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Lab Stockroom Assistant", org: "Cerritos College Science Division", desc: "Prepare chemistry/biology media, inventory reagents, and maintain lab safety equipment.", flex: "12-15 hrs/wk" },
+                    { stage: "lower", title: "Sample Reception Clerk", org: "Quest Diagnostics / Labcorp (Sante Fe Springs)", desc: "Receive, log, and organize diagnostic biological samples.", flex: "Flexible Part-time" },
+                    { stage: "upper", title: "Junior Quality Assurance Aide", org: "Grifols Bio Supplies (Los Angeles)", desc: "Assist with document archiving and routine environmental monitoring in lab facilities.", flex: "15-20 hrs/wk" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "STEM Lab Kit Assistant", org: "LA County Science Fair / Local High Schools", desc: "Help assemble hands-on science assay kits for high school outreach." },
+                    { stage: "upper", title: "Community Water Sampling Aide", org: "Heal the Bay (Santa Monica / Long Beach)", desc: "Collect marine water samples for microbiological quality testing." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Biomanufacturing Summer Intern", org: "Edwards Lifesciences (Irvine)", desc: "Work with medical device and biological tissue manufacturing engineers." },
+                    { stage: "upper", title: "Biotech Lab Intern", org: "Kite Pharma / Gilead (El Segundo)", desc: "Paid internship supporting cell therapy manufacturing and laboratory operations." }
+                ],
+                transfer: {
+                    certs: ["Biotechnology I: Basic Wet Lab Skills Certificate", "Biotechnology II: Biomanufacturing Certificate", "cGMP / FDA Compliance Certificate"],
+                    universities: ["CSU Dominguez Hills (Biotechnology B.S.)", "CSU Los Angeles (Biochemistry / Biotech B.S.)", "Cal Poly Pomona (Biotechnology B.S.)"]
+                }
+            },
+            {
+                id: "botany",
+                title: "Botany",
+                type: "Associate Degree (A.S.)",
+                category: "Biological Sciences",
+                icon: "fa-seedling",
+                salary: "$48,000 - $80,000 / yr",
+                growth: "+6.5%",
+                hubs: "Palos Verdes, Claremont, Arcadia, Long Beach",
+                description: "Specialized focus on plant genetics, pathology, taxonomy, and plant ecology. Prepares students for agricultural tech, botanical gardens, and environmental consulting.",
+                careers: [
+                    { title: "Horticultural Specialist", wage: "$52,000/yr", desc: "Manage plant health, soil conditions, and pest control at nurseries and botanical centers." },
+                    { title: "Botanical Research Assistant", wage: "$55,000/yr", desc: "Conduct plant field surveys, tissue sampling, and herbarium documentation." },
+                    { title: "Soil & Agriculture Tech", wage: "$50,000/yr", desc: "Analyze soil samples and irrigation water quality for commercial agricultural systems." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Nursery & Plant Care Associate", org: "Moon Valley Nursery / Local Garden Centers", desc: "Identify plant species, diagnose plant nutrition needs, and advise customers.", flex: "15-20 hrs/wk" },
+                    { stage: "upper", title: "Greenhouse / Lab Assistant", org: "CSULB / Cal Poly Pomona Agriculture Dept", desc: "Maintain greenhouse environmental controls, watering schedules, and experimental crops.", flex: "Part-time" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "Native Plant Restoration Volunteer", org: "Palos Verdes Peninsula Land Conservancy", desc: "Participate in native plant propagation, weed removal, and habitat restoration." },
+                    { stage: "lower", title: "Botanical Garden Docent Assistant", org: "Rancho Santa Ana / California Botanic Garden", desc: "Lead educational tours and assist with botanical collections." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Horticulture & Plant Science Intern", org: "Los Angeles County Arboretum (Arcadia)", desc: "Hands-on experience maintaining global plant collections and botanical databases." },
+                    { stage: "upper", title: "Urban Forestry Intern", org: "City of Long Beach Parks & Recreation", desc: "Assist urban foresters in inventorying tree species and health assessments." }
+                ],
+                transfer: {
+                    certs: ["California Certified Nursery Professional (CCNP)", "Pesticide Applicator Certificate"],
+                    universities: ["Cal Poly Pomona (Plant Science B.S.)", "UC Davis (Plant Biology B.S.)", "CSU Humboldt (Botany B.S.)"]
+                }
+            },
+            {
+                id: "chemical-tech",
+                title: "Chemical Technology - Polymer",
+                type: "Certificate of Achievement",
+                category: "Chemical Sciences",
+                icon: "fa-flask-gear",
+                salary: "$52,000 - $85,000 / yr",
+                growth: "+7.2%",
+                hubs: "Compton, Santa Fe Springs, Carson, Anaheim",
+                description: "Hands-on technical certificate focusing on polymer chemistry, plastics processing, material testing, compounding, and quality testing for industrial manufacturing.",
+                careers: [
+                    { title: "Polymer Processing Specialist", wage: "$56,000/yr", desc: "Operate extrusion, injection molding, and polymer compounding machinery." },
+                    { title: "Materials Testing Tech", wage: "$60,000/yr", desc: "Conduct tensile, thermal (DSC/TGA), and viscosity testing on polymer samples." },
+                    { title: "Chemical Lab Technician", wage: "$54,000/yr", desc: "Prepare chemical solutions, calibrate instrumentation, and maintain wet lab safety." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Materials Logistics / Warehouse Aide", org: "Commercial Plastics Supply (Santa Fe Springs)", desc: "Receive polymer resins, categorize chemical inventory, and enforce SDS compliance.", flex: "20 hrs/wk" },
+                    { stage: "upper", title: "Junior Quality Control Inspector", org: "Aerospace Plastics Mfg (Carson)", desc: "Inspect molded components using calipers, micrometers, and hardness testers.", flex: "Part-time" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "Chemical Recycling Educator", org: "LA County Department of Public Works", desc: "Assist at household hazardous waste recycling days and plastics education events." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Materials Research Intern", org: "Hexcel / Composites Corp (Orange County)", desc: "Work with polymer chemists on carbon fiber pre-preg and resin formulations." },
+                    { stage: "upper", title: "Polymer Quality Assurance Intern", org: "Berry Global / Packaging Corp", desc: "Analyze raw polymer feedstocks and production line quality metrics." }
+                ],
+                transfer: {
+                    certs: ["Chemical Safety & Hazardous Materials Cert", "ISO 9001 Quality Inspector Cert"],
+                    universities: ["CSU Long Beach (Chemical Engineering / Materials B.S.)", "Cal Poly Pomona (Chemical Engineering B.S.)"]
+                }
+            },
+            {
+                id: "chemistry",
+                title: "Chemistry",
+                type: "Associate Degree (A.S.)",
+                category: "Chemical Sciences",
+                icon: "fa-vial font-bold",
+                salary: "$58,000 - $95,000 / yr",
+                growth: "+6.8%",
+                hubs: "Downey, Signal Hill, Torrance, Irvine",
+                description: "Covers general, organic, and analytical chemistry. Prepares students for chemistry degrees, pharmacy school, environmental labs, and chemical analysis careers.",
+                careers: [
+                    { title: "Analytical Chemistry Tech", wage: "$58,000/yr", desc: "Utilize HPLC, GC-MS, and titration setups to evaluate chemical samples." },
+                    { title: "Environmental Chemical Analyst", wage: "$62,000/yr", desc: "Test soil, water, and air samples for environmental contaminants." },
+                    { title: "Pharmaceutical Quality Analyst", wage: "$66,000/yr", desc: "Perform raw material assay tests for pharmaceutical manufacturing." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Chemistry Instructional Assistant", org: "Cerritos College Chemistry Dept", desc: "Help set up wet lab equipment, prepare standard reagents, and maintain chemical inventory.", flex: "12-15 hrs/wk" },
+                    { stage: "upper", title: "Lab Prep Aide", org: "Environmental Testing Lab (Signal Hill)", desc: "Clean lab glassware, prepare extraction reagents, and log samples into LIMS.", flex: "15-20 hrs/wk" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "ACS Chemistry Week Demonstrator", org: "American Chemical Society (LA Chapter)", desc: "Perform safe, exciting chemistry demonstrations for elementary/middle school students." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Environmental Analytical Intern", org: "LA County Sanitation Districts (Whittier)", desc: "Perform chemical analysis of wastewater effluents and industrial runoff." },
+                    { stage: "upper", title: "R&D Chemistry Intern", org: "PPG Industries / Coatings (Torrance)", desc: "Assist chemical engineers in formulating industrial coatings and adhesives." }
+                ],
+                transfer: {
+                    certs: ["OSHA Hazardous Waste Operations (HAZWOPER)", "Lab Safety Specialist"],
+                    universities: ["CSU Long Beach (Chemistry B.S.)", "UC Irvine (Chemistry B.S.)", "UCLA (Chemistry / Biochemistry B.S.)"]
+                }
+            },
+            {
+                id: "cis-cybersecurity",
+                title: "CIS: Cybersecurity",
+                type: "A.S. Degree & Certificate",
+                category: "Computer & Info Sciences",
+                icon: "fa-shield-halved",
+                salary: "$68,000 - $115,000 / yr",
+                growth: "+22% (Extremely High Demand)",
+                hubs: "Norwalk, Long Beach, Irvine, El Segundo, Remote",
+                description: "Hands-on training in network defense, ethical hacking, incident response, firewalls, threat analysis, and security compliance protocols.",
+                careers: [
+                    { title: "Junior Cybersecurity Analyst", wage: "$72,000/yr", desc: "Monitor security information and event management (SIEM) systems for anomalies." },
+                    { title: "Network Security Tech", wage: "$68,000/yr", desc: "Configure firewalls, VPNs, and intrusion detection systems." },
+                    { title: "SOC (Security Ops Center) Tier 1 Analyst", wage: "$75,000/yr", desc: "Triage security alerts and assist with incident isolation." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Student Computer Lab Monitor", org: "Cerritos College IT / Computer Labs", desc: "Assist students with login access, network issues, and software troubleshooting.", flex: "12-15 hrs/wk" },
+                    { stage: "upper", title: "Junior IT Security Helpdesk Tech", org: "Norwalk-La Mirada Unified School District", desc: "Assist K-12 IT staff with user account permissions, antivirus updates, and device deployment.", flex: "15-20 hrs/wk" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "CyberPatriot Youth Mentor", org: "Local High School CyberPatriot Clubs", desc: "Guide high school teams in securing Windows and Linux operating systems." },
+                    { stage: "upper", title: "Non-Profit IT Security Auditor", org: "Local Community Non-Profits", desc: "Help small non-profits set up secure password policies and data backup routines." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Cyber Security Intern", org: "City of Long Beach Technology & Innovation Dept", desc: "Audit network infrastructure, participate in vulnerability scans, and update security documentation." },
+                    { stage: "upper", title: "Information Security Intern", org: "Northrop Grumman / Aerospace Corp (El Segundo)", desc: "Paid internship evaluating hardware/software security controls in aerospace systems." }
+                ],
+                transfer: {
+                    certs: ["CompTIA Security+", "CompTIA Network+", "Certified Ethical Hacker (CEH)", "Cisco CCNA"],
+                    universities: ["CSU Dominguez Hills (Cybersecurity B.S.)", "Cal Poly Pomona (Cyber Security Track B.S.)", "CSU Fullerton (Information Systems B.S.)"]
+                }
+            },
+            {
+                id: "cis-cloud",
+                title: "CIS: Cloud Computing",
+                type: "Certificate of Achievement",
+                category: "Computer & Info Sciences",
+                icon: "fa-cloud-arrow-up",
+                salary: "$65,000 - $110,000 / yr",
+                growth: "+18%",
+                hubs: "Irvine, Los Angeles, Remote",
+                description: "Covers cloud infrastructure management (AWS/Azure), virtualization, cloud security, automated deployment, and serverless architectures.",
+                careers: [
+                    { title: "Cloud Support Associate", wage: "$68,000/yr", desc: "Troubleshoot cloud instance deployments, storage buckets, and IAM roles." },
+                    { title: "Junior DevOps Tech", wage: "$74,000/yr", desc: "Assist with automated script deployment, containerization (Docker), and monitoring." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "IT Helpdesk Specialist", org: "Local Managed Service Provider (MSP)", desc: "Provide Tier 1 remote software and cloud account support for small businesses.", flex: "15-20 hrs/wk" },
+                    { stage: "upper", title: "Cloud Systems Lab Assistant", org: "Cerritos College CIS Department", desc: "Help faculty maintain virtual lab instances and AWS Academy student environments.", flex: "12-15 hrs/wk" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "Tech Assistant for Non-Profits", org: "Byte Back / Local Community Centers", desc: "Help local charities migrate document storage to Google Workspace or Microsoft 365." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Cloud Infrastructure Intern", org: "Blizzard Entertainment (Irvine)", desc: "Work with cloud infrastructure teams managing online service environments." },
+                    { stage: "upper", title: "Enterprise Cloud Intern", org: "Ingram Micro (Irvine / Hybrid)", desc: "Assist enterprise solution architects with cloud migration blueprints." }
+                ],
+                transfer: {
+                    certs: ["AWS Certified Cloud Practitioner", "AWS Certified Solutions Architect Associate", "Microsoft Azure Fundamentals (AZ-900)"],
+                    universities: ["CSU Fullerton (Computer Science B.S.)", "CSU Long Beach (Computer Science B.S.)"]
+                }
+            },
+            {
+                id: "cis-programmer",
+                title: "CIS: Programmer & Web Development",
+                type: "A.S. Degree & Certificates",
+                category: "Computer & Info Sciences",
+                icon: "fa-code",
+                salary: "$62,000 - $105,000 / yr",
+                growth: "+12%",
+                hubs: "Irvine, Los Angeles, Pasadena, Remote",
+                description: "Covers full-stack programming concepts including C++, Java, Python, HTML/CSS/JavaScript, database management (SQL), and web application development.",
+                careers: [
+                    { title: "Junior Software Developer", wage: "$70,000/yr", desc: "Write, test, and maintain front-end and back-end code modules." },
+                    { title: "Front-End Web Developer", wage: "$65,000/yr", desc: "Build interactive web interfaces using modern frameworks and responsive design." },
+                    { title: "Database Assistant", wage: "$62,000/yr", desc: "Write SQL queries, maintain data pipelines, and verify database integrity." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Peer Coding Tutor", org: "Cerritos College Success Center", desc: "Tutor computer science students in Python, C++, and Web Development basics.", flex: "10-15 hrs/wk" },
+                    { stage: "upper", title: "Freelance Web Developer / Maintenance", org: "Local Norwalk/Downey Small Businesses", desc: "Build and update custom responsive websites and e-commerce stores.", flex: "Flexible" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "Code.org / Youth Coding Instructor", org: "Norwalk Public Library STEM Club", desc: "Teach elementary school children basic logic and Scratch/Python coding." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Software Engineering Intern", org: "Raytheon Technologies (El Segundo)", desc: "Collaborate on software testing and feature development for defense systems." },
+                    { stage: "upper", title: "Web & Mobile Developer Intern", org: "City of Los Angeles Information Technology Agency", desc: "Develop features for city public portal apps and internal web tools." }
+                ],
+                transfer: {
+                    certs: ["Python Institute PCEP/PCAP", "Oracle Certified Associate Java", "AWS Certified Developer"],
+                    universities: ["CSU Long Beach (Computer Science B.S.)", "CSU Dominguez Hills (Computer Science B.S.)", "UC Irvine (Software Engineering B.S.)"]
+                }
+            },
+            {
+                id: "computer-science",
+                title: "Computer Science",
+                type: "Associate Degree (A.S.)",
+                category: "Computer & Info Sciences",
+                icon: "fa-laptop-code",
+                salary: "$75,000 - $125,000 / yr",
+                growth: "+15%",
+                hubs: "Pasadena, Irvine, El Segundo, Los Angeles, Remote",
+                description: "Rigorous theoretical and mathematical foundation in computer science, algorithms, data structures, discrete structures, and computer organization.",
+                careers: [
+                    { title: "Software Engineer", wage: "$82,000/yr", desc: "Design and implement complex algorithms and enterprise software architecture." },
+                    { title: "Systems Programmer", wage: "$85,000/yr", desc: "Develop low-level systems software, OS kernels, or embedded device code." },
+                    { title: "Data Analyst / Data Engineer Associate", wage: "$78,000/yr", desc: "Process large datasets, build statistical models, and design ETL data pipelines." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Computer Science Instructional Aide", org: "Cerritos College CS Department", desc: "Assist professors with lab session setups, code grading, and student Q&A.", flex: "12-15 hrs/wk" },
+                    { stage: "upper", title: "Junior QA Software Tester", org: "Tech Startup (Irvine / Remote)", desc: "Write automated test scripts and report software defects.", flex: "15-20 hrs/wk" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "Hackathon Organizer / Mentor", org: "Cerritos College ACM Student Chapter", desc: "Help host coding workshops and peer hackathon competitions on campus." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Software Engineering Summer Intern", org: "NASA Jet Propulsion Laboratory (JPL - Pasadena)", desc: "Paid undergraduate research internship developing space mission software." },
+                    { stage: "upper", title: "Software Engineering Intern", org: "The Aerospace Corporation (El Segundo)", desc: "Build high-performance algorithms for space payload systems and simulations." }
+                ],
+                transfer: {
+                    certs: ["CompTIA Network+", "Git / Github Open Source Contributor Portfolio"],
+                    universities: ["UC Berkeley (CS / EECS)", "UCLA (Computer Science B.S.)", "UC Irvine (Computer Science B.S.)", "Cal Poly Pomona (Computer Science B.S.)"]
+                }
+            },
+            {
+                id: "engineering",
+                title: "Engineering (General, Mechanical, Aerospace, Electrical)",
+                type: "Associate Degrees (A.S. Specialties)",
+                category: "Engineering & Tech",
+                icon: "fa-gears",
+                salary: "$70,000 - $118,000 / yr",
+                growth: "+9%",
+                hubs: "El Segundo, Long Beach, Seal Beach, Palmdale, Irvine",
+                description: "Covers core engineering mechanics, CAD drafting, circuits, statics, dynamics, and thermodynamics for transfer into specialized engineering branches.",
+                careers: [
+                    { title: "Engineering CAD Drafter", wage: "$62,000/yr", desc: "Create detailed 3D CAD models and technical blueprints using SolidWorks or AutoCAD." },
+                    { title: "Junior Mechanical Tech", wage: "$65,000/yr", desc: "Assemble, calibrate, and test mechanical prototypes and robotic sub-assemblies." },
+                    { title: "Electrical Test Tech", wage: "$68,000/yr", desc: "Test circuit boards, wiring harnesses, and power delivery hardware." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Makerspace / CAD Lab Technician", org: "Cerritos College Engineering Dept", desc: "Maintain 3D printers, CNC routers, and assist students with CAD design software.", flex: "12-15 hrs/wk" },
+                    { stage: "upper", title: "Quality Inspection Tech", org: "Precision Machining Corp (Lakewood/Norwalk)", desc: "Inspect aerospace parts using coordinate measuring machines (CMM) and micrometers.", flex: "15-20 hrs/wk" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "FIRST Robotics Team Mentor", org: "Local High Schools (Norwalk / Bellflower)", desc: "Guide high school student teams through mechanical design and CAD for competitions." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Aerospace Engineering Intern", org: "Boeing (Seal Beach / Long Beach)", desc: "Work alongside senior engineers on commercial and defense aircraft structures." },
+                    { stage: "upper", title: "Mechanical Engineering Intern", org: "Northrop Grumman (Redondo Beach / El Segundo)", desc: "Participate in satellite design, CAD modeling, and thermal testing." },
+                    { stage: "upper", title: "Electrical Engineering Systems Intern", org: "Southern California Edison (Rosemead / OC)", desc: "Paid internship supporting electrical grid hardware and renewable integration." }
+                ],
+                transfer: {
+                    certs: ["SolidWorks Associate (CSWA)", "AutoCAD Certified User", "OSHA 10 Safety"],
+                    universities: ["CSU Long Beach (Mechanical / Aerospace / EE B.S.)", "Cal Poly Pomona (Engineering B.S.)", "UC Irvine (Henry Samueli Engineering)"]
+                }
+            },
+            {
+                id: "geography-geology",
+                title: "Geography, Geology & Earth/Space Sciences",
+                type: "Associate Degrees (A.S.)",
+                category: "Earth & Physical Sciences",
+                icon: "fa-earth-americas",
+                salary: "$54,000 - $90,000 / yr",
+                growth: "+7.5%",
+                hubs: "Long Beach, Los Angeles, Pasadena, Santa Ana",
+                description: "Explores physical geography, GIS mapping, geological hazard assessment, environmental geology, spatial analysis, and Earth system dynamics.",
+                careers: [
+                    { title: "GIS Technician", wage: "$58,000/yr", desc: "Maintain spatial databases and create maps using ArcGIS for urban planning or utilities." },
+                    { title: "Geological Field Tech", wage: "$56,000/yr", desc: "Perform soil logging, groundwater sampling, and geotechnical field measurements." },
+                    { title: "Environmental Field Assistant", wage: "$55,000/yr", desc: "Collect environmental data for geotechnical and environmental impact consulting firms." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Geography & Earth Science Tutor", org: "Cerritos College Success Center", desc: "Tutor students in physical geography, weather/climate, and physical geology.", flex: "10-12 hrs/wk" },
+                    { stage: "upper", title: "Junior GIS Assistant", org: "Local Utility / Municipal Planning Dept", desc: "Digitize infrastructure maps and log spatial asset locations.", flex: "15 hrs/wk" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "Coastal Restoration Volunteer", org: "Bolsa Chica Ecological Reserve (Huntington Beach)", desc: "Assist with wetland ecological surveys, erosion monitoring, and native plantings." },
+                    { stage: "lower", title: "Museum Geology Assistant", org: "Natural History Museum of Los Angeles County", desc: "Assist curatorial staff with mineral and fossil collection cataloging." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Geotechnical Field Intern", org: "LA County Department of Public Works", desc: "Assist civil engineers and geologists on slope stability and bridge foundation testing." },
+                    { stage: "upper", title: "GIS & Urban Mapping Intern", org: "Southern California Association of Governments (SCAG)", desc: "Paid internship analyzing regional land use, population demographics, and transportation GIS layers." }
+                ],
+                transfer: {
+                    certs: ["ArcGIS Desktop Entry Certification", "OSHA 40-Hour HAZWOPER"],
+                    universities: ["CSU Long Beach (Geography B.A./B.S. & Geology B.S.)", "UCLA (Geography / Environmental Science B.S.)", "CSU Fullerton (Geology B.S.)"]
+                }
+            },
+            {
+                id: "mathematics",
+                title: "Mathematics",
+                type: "Associate Degree (A.S.)",
+                category: "Math & Physics",
+                icon: "fa-calculator",
+                salary: "$65,000 - $110,000 / yr",
+                growth: "+10%",
+                hubs: "Los Angeles, Irvine, Remote",
+                description: "Deep training in calculus, linear algebra, differential equations, and statistics. Excellent foundation for data science, actuary, finance, and engineering.",
+                careers: [
+                    { title: "Junior Data Analyst", wage: "$68,000/yr", desc: "Clean datasets, run statistical regressions, and build business dashboard reports." },
+                    { title: "Actuarial Assistant", wage: "$72,000/yr", desc: "Analyze mortality and risk tables for insurance and risk management firms." },
+                    { title: "Math Educator / Specialist", wage: "$60,000/yr", desc: "Teach mathematics at secondary levels or develop STEM learning curriculum." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Embedded Math Tutor / SI Leader", org: "Cerritos College Math Department", desc: "Lead Supplemental Instruction (SI) workshops for Calculus and Statistics classes.", flex: "12-15 hrs/wk" },
+                    { stage: "upper", title: "Data Entry / Quantitative Assistant", org: "Local Financial & Logistics Companies", desc: "Extract quantitative data, manage Excel models, and create variance reports.", flex: "15-20 hrs/wk" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "Math Olympiad Coach Assistant", org: "Local Middle / High Schools", desc: "Help train school math competition teams in creative problem solving." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Data Science & Analytics Intern", org: "Capital Group (Los Angeles)", desc: "Paid internship applying quantitative analysis to financial market data." },
+                    { stage: "upper", title: "Operations Research Intern", org: "Port of Long Beach / Logistics Firm", desc: "Optimize cargo handling routes and container flow statistics using linear programming." }
+                ],
+                transfer: {
+                    certs: ["Society of Actuaries Exam P / FM", "Advanced Python & R Data Analysis Certificate"],
+                    universities: ["CSU Long Beach (Applied Math B.S.)", "UCLA (Mathematics / Financial Actuarial B.S.)", "UC Irvine (Mathematics B.S.)"]
+                }
+            },
+            {
+                id: "microbiology-zoology",
+                title: "Microbiology & Zoology",
+                type: "Associate Degrees (A.S.)",
+                category: "Biological Sciences",
+                icon: "fa-microscope",
+                salary: "$50,000 - $86,000 / yr",
+                growth: "+7.8%",
+                hubs: "Downey, Signal Hill, San Pedro, Los Angeles",
+                description: "Specialized biological pathways focusing on microscopic pathogens, immunology, cell culture, or animal behavior, taxonomy, and wildlife biology.",
+                careers: [
+                    { title: "Microbiology Lab Tech", wage: "$56,000/yr", desc: "Perform bacterial plating, Gram staining, and pathogen screening in food or clinical labs." },
+                    { title: "Wildlife Biologist Assistant", wage: "$52,000/yr", desc: "Monitor animal populations, track native species, and conduct habitat field surveys." },
+                    { title: "Zookeeper / Animal Care Specialist", wage: "$46,000/yr", desc: "Manage animal nutrition, enrichment, and habitat maintenance at zoological parks." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Veterinary Clinic Assistant", org: "Local Norwalk / Lakewood Animal Hospitals", desc: "Assist veterinarians with patient holding, surgical prep cleanliness, and client care.", flex: "15-20 hrs/wk" },
+                    { stage: "upper", title: "Microbiology Lab Stockroom Tech", org: "Cerritos College Bio Dept", desc: "Autoclave glassware, culture agar plates, and maintain bacterial stock cultures.", flex: "12-15 hrs/wk" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "Animal Care Volunteer", org: "Los Angeles Zoo & Botanical Gardens", desc: "Assist educational docents and animal care teams with public education." },
+                    { stage: "lower", title: "Aquarium Education Assistant", org: "Aquarium of the Pacific (Long Beach)", desc: "Educate visitors on marine organism biology and touch-tank specimen care." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Public Health Microbiology Intern", org: "LA County Public Health Laboratory", desc: "Learn clinical diagnostic testing methods for infectious diseases." },
+                    { stage: "upper", title: "Conservation Biology Intern", org: "Cabrillo Marine Aquarium / San Pedro", desc: "Participate in marine organism cultivation and field conservation monitoring." }
+                ],
+                transfer: {
+                    certs: ["Registered Veterinary Technician (RVT) Prep", "AALAS Animal Care Certification"],
+                    universities: ["CSU Long Beach (Microbiology / Biology B.S.)", "Cal Poly Pomona (Zoology / Animal Science B.S.)", "UC Davis (Microbiology B.S.)"]
+                }
+            },
+            {
+                id: "physics",
+                title: "Physics",
+                type: "Associate Degree (A.S.)",
+                category: "Math & Physics",
+                icon: "fa-atom",
+                salary: "$72,000 - $120,000 / yr",
+                growth: "+8.2%",
+                hubs: "Pasadena, El Segundo, Irvine",
+                description: "Deep study of mechanics, electromagnetism, optics, quantum concepts, and computational physics. Core stepping stone for engineering and physical science research.",
+                careers: [
+                    { title: "Optics / Photonics Technician", wage: "$68,000/yr", desc: "Test laser systems, align precision optical lenses, and run fiber optic diagnostics." },
+                    { title: "Research Lab Specialist", wage: "$72,000/yr", desc: "Operate vacuum chambers, particle detectors, and high-precision sensors in R&D labs." },
+                    { title: "Quantitative Test Engineer", wage: "$78,000/yr", desc: "Apply mathematical physics modeling to hardware thermal and stress simulation." }
+                ],
+                partTimeJobs: [
+                    { stage: "lower", title: "Physics Demo & Lab Assistant", org: "Cerritos College Physics Dept", desc: "Setup lab apparatuses for mechanics and electricity/magnetism experiments.", flex: "12-15 hrs/wk" },
+                    { stage: "upper", title: "STEM Physics Peer Tutor", org: "Cerritos College Student Success Center", desc: "Help calculus-based physics students master vectors, forces, and circuit laws.", flex: "10-15 hrs/wk" }
+                ],
+                volunteers: [
+                    { stage: "lower", title: "Griffith Observatory Public Science Guide", org: "Griffith Observatory (Los Angeles)", desc: "Assist planetarium visitors with telescope viewing and astronomy exhibits." }
+                ],
+                internships: [
+                    { stage: "upper", title: "Physics REU Fellow", org: "Caltech / JPL Summer Undergraduate Research", desc: "Participate in astrophysics or condensed matter physics laboratory research projects." },
+                    { stage: "upper", title: "Optics Engineering Intern", org: "Thales Avionics / Aerospace Optics (Irvine)", desc: "Assist optical engineers with flight display and sensor assembly testing." }
+                ],
+                transfer: {
+                    certs: ["LabVIEW Associate Developer Cert", "Python for Physics Simulation"],
+                    universities: ["UC Berkeley (Physics B.S.)", "UCLA (Physics B.S.)", "CSU Long Beach (Physics B.S.)", "Caltech (Transfer Prep)"]
+                }
+            }
+        ];
+
+        // Application State
+        let currentMajorId = "biology";
+        let currentStageFilter = "all"; // 'all', 'lower', 'upper'
+        let currentTab = "overview";
+        let searchQuery = "";
+        let actionPlan = JSON.parse(localStorage.getItem('cc_action_plan') || '[]');
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            populateMajorSelect();
+            updateDashboard();
+            updateActionPlanUI();
+        });
+
+        function populateMajorSelect() {
+            const select = document.getElementById('major-select');
+            select.innerHTML = '';
+            
+            // Group options
+            const categories = {};
+            majorsData.forEach(m => {
+                if (!categories[m.category]) categories[m.category] = [];
+                categories[m.category].push(m);
+            });
+
+            for (const cat in categories) {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = cat;
+                categories[cat].forEach(major => {
+                    const option = document.createElement('option');
+                    option.value = major.id;
+                    option.textContent = `${major.title} (${major.type})`;
+                    optgroup.appendChild(option);
+                });
+                select.appendChild(optgroup);
+            }
+
+            select.value = currentMajorId;
+        }
+
+        function handleMajorChange(majorId) {
+            currentMajorId = majorId;
+            updateDashboard();
+        }
+
+        function setStage(stage) {
+            currentStageFilter = stage;
+            
+            // Update button styles
+            document.querySelectorAll('.stage-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-teal-800', 'shadow-sm');
+                btn.classList.add('text-slate-600');
+            });
+            
+            const activeBtn = document.getElementById(`stage-${stage}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-white', 'text-teal-800', 'shadow-sm');
+                activeBtn.classList.remove('text-slate-600');
+            }
+
+            renderTabContent();
+        }
+
+        function handleSearch(query) {
+            searchQuery = query.toLowerCase().trim();
+            renderTabContent();
+        }
+
+        function switchTab(tabKey) {
+            currentTab = tabKey;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeTabBtn = document.getElementById(`tab-${tabKey}`);
+            if (activeTabBtn) activeTabBtn.classList.add('active');
+
+            renderTabContent();
+        }
+
+        function updateDashboard() {
+            const major = majorsData.find(m => m.id === currentMajorId) || majorsData[0];
+
+            // Header info
+            document.getElementById('program-title').textContent = major.title;
+            document.getElementById('program-badge-type').textContent = major.type;
+            document.getElementById('program-category').textContent = major.category;
+            document.getElementById('program-description').textContent = major.description;
+            document.getElementById('program-salary').textContent = major.salary;
+            document.getElementById('program-growth').textContent = major.growth;
+            document.getElementById('program-hubs').textContent = major.hubs;
+            document.getElementById('program-bg-icon').className = `fa-solid ${major.icon} text-9xl text-white`;
+
+            renderTabContent();
+        }
+
+        function renderTabContent() {
+            const major = majorsData.find(m => m.id === currentMajorId) || majorsData[0];
+            const container = document.getElementById('tab-content-container');
+            container.innerHTML = '';
+
+            if (currentTab === 'overview') {
+                container.innerHTML = renderOverviewTab(major);
+            } else if (currentTab === 'jobs') {
+                container.innerHTML = renderJobsTab(major);
+            } else if (currentTab === 'volunteer') {
+                container.innerHTML = renderVolunteerTab(major);
+            } else if (currentTab === 'internships') {
+                container.innerHTML = renderInternshipsTab(major);
+            } else if (currentTab === 'transfer') {
+                container.innerHTML = renderTransferTab(major);
+            }
+        }
+
+        function renderOverviewTab(major) {
+            const filteredCareers = major.careers.filter(c => 
+                !searchQuery || c.title.toLowerCase().includes(searchQuery) || c.desc.toLowerCase().includes(searchQuery)
+            );
+
+            return `
+                <div class="space-y-6">
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 text-xs sm:text-sm text-amber-900">
+                        <i class="fa-solid fa-lightbulb text-amber-600 text-lg mt-0.5"></i>
+                        <div>
+                            <strong>Faculty Career Tip:</strong> Community college Associate Degrees and Certificates in STEM provide direct entry into technical laboratory, CAD, and junior developer positions. Coupling your degree with 1-2 practical certifications or local volunteer experiences makes your transfer and job applications significantly stronger!
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        ${filteredCareers.map(c => `
+                            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="bg-teal-50 text-teal-800 text-xs font-bold px-2.5 py-1 rounded-md border border-teal-200">${c.wage}</span>
+                                        <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
+                                    </div>
+                                    <h3 class="font-bold text-base text-slate-900">${c.title}</h3>
+                                    <p class="text-xs text-slate-600 leading-relaxed">${c.desc}</p>
+                                </div>
+                                <button onclick="addToActionPlan('${c.title}', 'Career Role (${major.title})')" class="w-full bg-slate-100 hover:bg-teal-600 hover:text-white text-slate-700 font-bold py-2 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-plus text-xs"></i> Save to Career Plan
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderJobsTab(major) {
+            let jobs = major.partTimeJobs;
+            if (currentStageFilter !== 'all') {
+                jobs = jobs.filter(j => j.stage === currentStageFilter);
+            }
+            if (searchQuery) {
+                jobs = jobs.filter(j => j.title.toLowerCase().includes(searchQuery) || j.org.toLowerCase().includes(searchQuery) || j.desc.toLowerCase().includes(searchQuery));
+            }
+
+            if (jobs.length === 0) {
+                return `<div class="bg-white rounded-xl p-8 text-center text-slate-500 text-sm">No part-time job opportunities match your current filter or search criteria. Try setting stage to "All Stages".</div>`;
+            }
+
+            return `
+                <div class="space-y-4">
+                    <p class="text-xs text-slate-500 font-medium">Recommended Part-Time Roles suitable while taking classes at Cerritos College:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${jobs.map(j => `
+                            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3 flex flex-col justify-between">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between flex-wrap gap-2">
+                                        <span class="${j.stage === 'lower' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} text-[11px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
+                                            ${j.stage === 'lower' ? 'Freshman / Sophomore Friendly' : 'Advanced / Transfer Stage'}
+                                        </span>
+                                        <span class="text-xs font-semibold text-slate-500"><i class="fa-regular fa-clock text-slate-400 mr-1"></i>${j.flex}</span>
+                                    </div>
+                                    <h3 class="font-bold text-base text-slate-900 leading-snug">${j.title}</h3>
+                                    <p class="text-xs font-bold text-teal-700"><i class="fa-solid fa-building mr-1"></i>${j.org}</p>
+                                    <p class="text-xs text-slate-600 leading-relaxed">${j.desc}</p>
+                                </div>
+                                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                                    <span class="text-[11px] text-slate-400 font-medium">Local Norwalk / LA-OC Role</span>
+                                    <button onclick="addToActionPlan('${j.title} @ ${j.org}', 'Part-Time Job')" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1 shadow-sm">
+                                        <i class="fa-solid fa-bookmark text-xs"></i> Add Role
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderVolunteerTab(major) {
+            let volunteers = major.volunteers;
+            if (currentStageFilter !== 'all') {
+                volunteers = volunteers.filter(v => v.stage === currentStageFilter);
+            }
+            if (searchQuery) {
+                volunteers = volunteers.filter(v => v.title.toLowerCase().includes(searchQuery) || v.org.toLowerCase().includes(searchQuery) || v.desc.toLowerCase().includes(searchQuery));
+            }
+
+            if (volunteers.length === 0) {
+                return `<div class="bg-white rounded-xl p-8 text-center text-slate-500 text-sm">No volunteer opportunities match your current search/filter.</div>`;
+            }
+
+            return `
+                <div class="space-y-4">
+                    <p class="text-xs text-slate-500 font-medium">High-Impact Volunteer & Service Opportunities near Cerritos College:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${volunteers.map(v => `
+                            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3 flex flex-col justify-between">
+                                <div class="space-y-2">
+                                    <span class="bg-indigo-50 text-indigo-700 border border-indigo-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full">
+                                        Community & Field Experience
+                                    </span>
+                                    <h3 class="font-bold text-base text-slate-900">${v.title}</h3>
+                                    <p class="text-xs font-bold text-indigo-800"><i class="fa-solid fa-hands-holding-circle mr-1"></i>${v.org}</p>
+                                    <p class="text-xs text-slate-600 leading-relaxed">${v.desc}</p>
+                                </div>
+                                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                                    <span class="text-[11px] text-slate-400 font-medium">Great for Resume Building</span>
+                                    <button onclick="addToActionPlan('${v.title} (${v.org})', 'Volunteer Work')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1 shadow-sm">
+                                        <i class="fa-solid fa-plus"></i> Save Volunteer Site
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderInternshipsTab(major) {
+            let internships = major.internships;
+            if (currentStageFilter !== 'all') {
+                internships = internships.filter(i => i.stage === currentStageFilter);
+            }
+            if (searchQuery) {
+                internships = internships.filter(i => i.title.toLowerCase().includes(searchQuery) || i.org.toLowerCase().includes(searchQuery) || i.desc.toLowerCase().includes(searchQuery));
+            }
+
+            if (internships.length === 0) {
+                return `<div class="bg-white rounded-xl p-8 text-center text-slate-500 text-sm">No internships found for the selected filter. Switch stage to "All Stages" to view options.</div>`;
+            }
+
+            return `
+                <div class="space-y-4">
+                    <p class="text-xs text-slate-500 font-medium">Formal Industry Internships & University REUs (Research Experiences for Undergraduates):</p>
+                    <div class="space-y-4">
+                        ${internships.map(i => `
+                            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="space-y-1.5 max-w-2xl">
+                                    <div class="flex items-center gap-2">
+                                        <span class="bg-amber-100 text-amber-900 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">Formal Internship Program</span>
+                                        <span class="text-xs text-slate-500 font-semibold"><i class="fa-solid fa-location-dot text-rose-500 mr-1"></i>LA / OC Area</span>
+                                    </div>
+                                    <h3 class="font-bold text-lg text-slate-900">${i.title}</h3>
+                                    <p class="text-xs font-bold text-amber-700"><i class="fa-solid fa-building-columns mr-1"></i>${i.org}</p>
+                                    <p class="text-xs text-slate-600 leading-relaxed">${i.desc}</p>
+                                </div>
+                                <div class="flex md:flex-col items-center justify-end gap-2 shrink-0">
+                                    <button onclick="addToActionPlan('${i.title} @ ${i.org}', 'Internship / REU')" class="w-full bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 shadow">
+                                        <i class="fa-solid fa-bookmark"></i> Save Internship
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTransferTab(major) {
+            return `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Certifications to boost resume -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
+                        <div class="flex items-center gap-2 text-teal-800">
+                            <i class="fa-solid fa-award text-lg"></i>
+                            <h3 class="font-bold text-base">Key Certifications & Technical Badges</h3>
+                        </div>
+                        <p class="text-xs text-slate-600">Earning these industry-recognized credentials along with your Cerritos College coursework will make you stand out to employers:</p>
+                        <ul class="space-y-2.5">
+                            ${major.transfer.certs.map(cert => `
+                                <li class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-bold text-slate-800 flex items-center justify-between">
+                                    <span class="flex items-center gap-2"><i class="fa-solid fa-certificate text-amber-500"></i> ${cert}</span>
+                                    <button onclick="addToActionPlan('${cert}', 'Industry Certification')" class="text-teal-700 hover:text-teal-900 text-xs"><i class="fa-solid fa-plus-circle"></i> Add</button>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+
+                    <!-- Transfer University Destinations -->
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
+                        <div class="flex items-center gap-2 text-sky-800">
+                            <i class="fa-solid fa-graduation-cap text-lg"></i>
+                            <h3 class="font-bold text-base">Top Local University Transfer Pathways</h3>
+                        </div>
+                        <p class="text-xs text-slate-600">Top 4-year transfer destinations for Cerritos College STEM students:</p>
+                        <ul class="space-y-2.5">
+                            ${major.transfer.universities.map(uni => `
+                                <li class="bg-sky-50 border border-sky-100 p-3 rounded-xl text-xs font-bold text-sky-950 flex items-center justify-between">
+                                    <span class="flex items-center gap-2"><i class="fa-solid fa-university text-sky-600"></i> ${uni}</span>
+                                    <button onclick="addToActionPlan('${uni}', 'Transfer Goal')" class="text-sky-700 hover:text-sky-900 text-xs"><i class="fa-solid fa-plus-circle"></i> Save Goal</button>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Action Plan Logic
+        function addToActionPlan(title, category) {
+            const exists = actionPlan.some(item => item.title === title && item.category === category);
+            if (!exists) {
+                actionPlan.push({ title, category, major: currentMajorId, date: new Date().toLocaleDateString() });
+                localStorage.setItem('cc_action_plan', JSON.stringify(actionPlan));
+                updateActionPlanUI();
+                showToast(`Added "${title}" to your action plan!`);
+            } else {
+                showToast(`Already in your action plan!`);
+            }
+        }
+
+        function removeFromActionPlan(index) {
+            actionPlan.splice(index, 1);
+            localStorage.setItem('cc_action_plan', JSON.stringify(actionPlan));
+            updateActionPlanUI();
+        }
+
+        function clearActionPlan() {
+            if (confirm("Are you sure you want to clear your saved items?")) {
+                actionPlan = [];
+                localStorage.setItem('cc_action_plan', JSON.stringify(actionPlan));
+                updateActionPlanUI();
+            }
+        }
+
+        function updateActionPlanUI() {
+            document.getElementById('plan-badge-count').textContent = actionPlan.length;
+            document.getElementById('plan-count-text').textContent = actionPlan.length;
+
+            const itemsContainer = document.getElementById('action-plan-items');
+            if (actionPlan.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="text-center py-12 text-slate-400 space-y-3">
+                        <i class="fa-solid fa-clipboard-list text-4xl"></i>
+                        <p class="text-xs font-medium">Your career action plan is empty.<br>Explore jobs, internships, and volunteer roles and click "Add" to save them here.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            itemsContainer.innerHTML = actionPlan.map((item, idx) => `
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-start justify-between gap-2 text-xs">
+                    <div class="space-y-1">
+                        <span class="bg-teal-100 text-teal-800 text-[10px] font-extrabold px-2 py-0.5 rounded">${item.category}</span>
+                        <h4 class="font-bold text-slate-900">${item.title}</h4>
+                        <p class="text-[10px] text-slate-400">Added: ${item.date}</p>
+                    </div>
+                    <button onclick="removeFromActionPlan(${idx})" class="text-slate-400 hover:text-rose-600 p-1">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function toggleActionPlanModal() {
+            const modal = document.getElementById('action-plan-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 bg-slate-900 text-white font-bold text-xs px-4 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-2 border border-teal-500 animate-bounce';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-teal-400 text-sm"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
